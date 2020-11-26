@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Friendify</title>
+  <link rel="stylesheet" href="{{url_for('static', filename = '/css/style.css')}}">
+  <meta name="author" content="Ved Ameresh">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<!-- The variables in the jinja templating are defined in the config file!-->
+
+<body>
+    <header>
+        <img class ="logo" alt="logo" src="{{url_for('static', filename = 'images/logo.png')}}">
+        <h1>Friendify</h1>
+    </header>
+
+    {% block body %}
+
+    {% endblock %}
+
+    <footer>
+        Developed by: Ved Ameresh
+    </footer>
+
+</body>
+
+
+</html>

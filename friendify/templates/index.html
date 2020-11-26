@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+    <h2>{{username}}</h2>
+    <a class = "logout-button" href="{{url_for('show_logout')}}">Logout</a>
+
+    {% for artist in top_artists %}
+
+        <h3>{{top_artists.name}}</h3>
+
+    {% endfor %}
+
+{% endblock %}
