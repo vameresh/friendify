@@ -27,6 +27,11 @@ h2{
     font-size: 36px;
 }
 
+h3{
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
 .logo{
     display:inline;
     width: 100px;
@@ -61,6 +66,22 @@ h2{
 
 .container{
     padding: 50px;
+}
+
+.list-item{
+    padding: 10px;
+    border-radius:10px;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin: 10px;
+    color:rgba(0, 0, 0, 0.5);;
+}
+
+.thumbnail{
+    object-fit:contain;
+    width:150px;
+    height:150px;
+    display:inline;
+    border-radius:10px;
 }
 
 footer{

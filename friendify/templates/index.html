@@ -7,28 +7,50 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <h2>Welcome {{username}}!</h2>
+                <h2>Welcome {{displayname}}!</h2>
             </div>
         </div>
         <br>
         <div class="row">
             <div class="col-6">
-                <h3 style="font-weight: bold;">Top Artists</h3>
+                <h3>Top Artists</h3>
+                </br>
                 {% for artist in top_artists %}
-                    <h3>{{artist["name"]}}</h3>
+                    <div class='list-item'>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img class="thumbnail" src='{{artist["image"]}}'/>
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>{{artist["name"]}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
                 {% endfor %}
             </div>
             <div class="col-6">
                 <h3 style="font-weight: bold;">Top Tracks</h3>
+                </br>
                 {% for track in top_tracks %}
-                    <h3>{{track["name"]}}</h3>
-                    <p> by: 
-                        <span>
-                        {% for artist in track["artists"] %}
-                            {{artist["name"]}}
-                        {% endfor %}
-                        </span>
-                    </p>
+                    <div class="list-item">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img class="thumbnail" src='{{track["image"]}}'/>
+                            </div>
+                            <div class="col-sm-8">
+                                <h3>{{track["name"]}}</h3>
+                                <p> by: 
+                                    <span>
+                                    {% for artist in track["artists"] %}
+                                        {{artist["name"]}}
+                                    {% endfor %}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
                 {% endfor %}
             </div>
         </div>

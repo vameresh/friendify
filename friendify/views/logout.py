@@ -13,7 +13,7 @@ from friendify.views.helper import session_cache_path
 
 @friendify.app.route('/accounts/logout/')
 def show_logout():
-    
+
     if 'uuid' not in flask.session:
         print("uuid not in session, redirecting to login")
         return flask.redirect(flask.url_for('show_login'))
