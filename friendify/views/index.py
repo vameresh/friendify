@@ -4,10 +4,9 @@ Friendify login view.
 URLs include:
 /
 """
-import flask, os
+import flask, os, uuid, pprint
 import friendify
 import spotipy
-import uuid 
 from friendify.views.helper import session_cache_path
 
 
@@ -31,7 +30,8 @@ def show_index():
     context["top_tracks"] = spotify.current_user_top_tracks()['items']
     context["username"] = spotify.me()["display_name"]
 
-    print(context["top_artists"])
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(context["top_artists"])
     
     return flask.render_template("index.html", **context)
 

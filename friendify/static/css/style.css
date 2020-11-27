@@ -18,7 +18,13 @@ h1{
     top: 60px;
     font-size: 32px;
     margin: 0px 10px;
+    font-weight: bold;
 
+}
+
+h2{
+    font-weight:bold;
+    font-size: 36px;
 }
 
 .logo{
@@ -53,7 +59,9 @@ h1{
     text-decoration: none;
 }
 
-
+.container{
+    padding: 50px;
+}
 
 footer{
     background-color: #000000;

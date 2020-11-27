@@ -2,13 +2,35 @@
 
 {% block body %}
 
-    <h2>{{username}}</h2>
     <a class = "logout-button" href="{{url_for('show_logout')}}">Logout</a>
 
-    {% for artist in top_artists %}
-
-        <h3>{{top_artists.name}}</h3>
-
-    {% endfor %}
-
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2>Welcome {{username}}!</h2>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-6">
+                <h3 style="font-weight: bold;">Top Artists</h3>
+                {% for artist in top_artists %}
+                    <h3>{{artist["name"]}}</h3>
+                {% endfor %}
+            </div>
+            <div class="col-6">
+                <h3 style="font-weight: bold;">Top Tracks</h3>
+                {% for track in top_tracks %}
+                    <h3>{{track["name"]}}</h3>
+                    <p> by: 
+                        <span>
+                        {% for artist in track["artists"] %}
+                            {{artist["name"]}}
+                        {% endfor %}
+                        </span>
+                    </p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

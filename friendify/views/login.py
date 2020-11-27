@@ -4,10 +4,9 @@ Friendify login view.
 URLs include:
 /
 """
-import flask, os
+import flask, os, json, uuid
 import friendify
 import spotipy
-import uuid
 from friendify.views.helper import session_cache_path
 
 caches_folder = './.spotify_caches/'
