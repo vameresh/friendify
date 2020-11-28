@@ -37,5 +37,33 @@ def show_login():
         context["auth_url"] = auth_url
         return flask.render_template("/accounts/login.html", **context)
 
+    
+    # Connect to database
+    connection = friendify.model.get_db()
+
+    # Connect to Spotify API
+    spotify = spotipy.Spotify(auth_manager=auth_manager)
+    username = spotify.me()["display_name"]
+    
+    # retrieve temporary database information for stored users
+    cur = connection.execute(
+        "SELECT COUNT(username) "
+        "AS user_count FROM users WHERE username=?;",
+        (username,)
+    )
+    count_list = cur.fetchall()
+    count = 0
+    for user in count_list:
+        count = user["user_count"]
+
+    # if username doesn't exists, insert into table
+    if count == 0:
+        cur = connection.execute(
+        "INSERT INTO users (username)"
+        " VALUES (?);",
+        (username, )
+        )
+
+    # log in
     print("logged in, redirecting to index page")
     return flask.redirect(flask.url_for('show_index'))

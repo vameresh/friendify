@@ -7,10 +7,37 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <h2>Welcome {{displayname}}!</h2>
+                <h2>Welcome {{username}}!</h2>
             </div>
         </div>
-        <br>
+        </br>
+        </br>
+        <div class="row">
+            <form class = "search-bar" method="post" enctype="multipart/form-data">
+                <input class = "text-input col-10" type="text" name="username" placeholder="Add a Friend!" autocomplete="off"/>
+                <input class = "follow-button col-2" type="submit" name="follow" value="Follow"/>
+            </form>
+        </div>
+        {% for following in following_list %}
+        <div class="list-item">
+            <div class="row">
+                <div class="col-sm-4">
+                    <h3>{{following["username"]}}</h3>
+                </div>
+                <div class="col-sm-8">
+                    {% if following["follow_back"] %}
+                        <p>User follows you back!</p>
+                    {% else %}
+                        <p>User does not follow you back</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>    
+        {% endfor %}
+        </br>
+        </br>
+        </br>
+        </br>
         <div class="row">
             <div class="col-6">
                 <h3>Top Artists</h3>

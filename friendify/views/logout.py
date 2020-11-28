@@ -24,6 +24,25 @@ def show_logout():
         print("token not in cache, redirecting to login")
         return flask.redirect(flask.url_for('show_login'))
 
+    # Connect to database
+    connection = friendify.model.get_db()
+
+    # Connect to Spotify API
+    spotify = spotipy.Spotify(auth_manager=auth_manager)
+    username = spotify.me()["display_name"]
+
+    # Delete the user top tracks
+    cur = connection.execute(
+        "DELETE FROM toptracks WHERE username=?;",
+        (username,)
+    )
+
+    # Delete the user top artists
+    cur = connection.execute(
+        "DELETE FROM topartists WHERE username=?;",
+        (username,)
+    )
+
     try:
         # Remove the CACHE file (.cache-test) so that a new user can authorize.
         os.remove(session_cache_path())
