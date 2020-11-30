@@ -1,85 +1,110 @@
 {% extends 'base.html' %}
 
 {% block body %}
+<a class = "logout-button" href="{{url_for('show_logout')}}">Logout</a>
 
-    <a class = "logout-button" href="{{url_for('show_logout')}}">Logout</a>
-
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <h2>Welcome {{username}}!</h2>
-            </div>
-        </div>
-        </br>
-        </br>
-        <div class="row">
-            <form class = "search-bar" method="post" enctype="multipart/form-data">
-                <input class = "text-input col-10" type="text" name="username" placeholder="Add a Friend!" autocomplete="off"/>
-                <input class = "follow-button col-2" type="submit" name="follow" value="Follow"/>
-            </form>
-        </div>
-        {% for following in following_list %}
-        <div class="list-item">
-            <div class="row">
-                <div class="col-sm-4">
-                    <h3>{{following["username"]}}</h3>
-                </div>
-                <div class="col-sm-8">
-                    {% if following["follow_back"] %}
-                        <p>User follows you back!</p>
-                    {% else %}
-                        <p>User does not follow you back</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>    
-        {% endfor %}
-        </br>
-        </br>
-        </br>
-        </br>
-        <div class="row">
-            <div class="col-6">
-                <h3>Top Artists</h3>
-                </br>
-                {% for artist in top_artists %}
-                    <div class='list-item'>
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <img class="thumbnail" src='{{artist["image"]}}'/>
-                            </div>
-                            <div class="col-sm-8">
-                                <h3>{{artist["name"]}}</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                {% endfor %}
-            </div>
-            <div class="col-6">
-                <h3 style="font-weight: bold;">Top Tracks</h3>
-                </br>
-                {% for track in top_tracks %}
-                    <div class="list-item">
-                        <div class="row">
-                            <div class="col-sm-4">
-                                <img class="thumbnail" src='{{track["image"]}}'/>
-                            </div>
-                            <div class="col-sm-8">
-                                <h3>{{track["name"]}}</h3>
-                                <p> by: 
-                                    <span>
-                                    {% for artist in track["artists"] %}
-                                        {{artist["name"]}}
-                                    {% endfor %}
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                {% endfor %}
-            </div>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2>Welcome {{username}}!</h2>
         </div>
     </div>
+    </br>
+    </br>
+    <div class="row">
+        <form class = "search-bar" method="post" enctype="multipart/form-data">
+            <input class = "text-input col-10" type="text" name="username" placeholder="Add a Friend!" autocomplete="off"/>
+            <input class = "follow-button col-2" type="submit" name="follow" value="Follow"/>
+        </form>
+    </div>
+    {% for following in following_list %}
+    <div class="list-item">
+        <div id="{{following['username']}}" onclick="slideCompare(this.id, 500)"  class="row follow">
+            <div class="col-4">
+                <h3 class="{% if following['active'] %} is-active {% else %} is-not-active {% endif %}">{{following["username"]}}</h3>
+            </div>
+            <div class="col-4" align="center">
+                {% if not following["follows_back"] %}
+                    <p>User does not follow you back</p>
+                {% elif not following["active"] %}
+                    <p>User is not active</p>
+                {% else %}
+                    <p style="display: inline;"> Click to compare!</p>
+                    <img class = "toggle-arrow" id = "{{following['username']}}-arrow" src="{{url_for('static', filename = '/images/arrow.svg')}}" />
+                {% endif %}
+            </div>
+            <form class="col-4" align="right" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="username" value="{{following['username']}}"/>
+                <input class="unfollow-button" type="submit" name="unfollow" value="Unfollow"/>
+            </form>
+        </div>
+        {% if following["follows_back"] and following["active"]%}
+        <div id="{{following['username']}}-info" class="info">
+            <p align="center" style="font-weight: bold;">You and {{following["username"]}} are {{following["score"]}}% similar!</p>
+            <div class="row">
+                <div align="center" class="col-6">
+                    <p style="font-weight: bold;">You and {{following["username"]}} both like these artists:</p>
+                    {% for artist in following["similar_artists"] %}
+                        <p>{{artist["name"]}}</p>
+                    {% endfor %}
+                </div>
+                <div align="center" class="col-6">
+                    <p style="font-weight: bold;">You and {{following["username"]}} both like these tracks:</p>
+                    {% for track in following["similar_tracks"] %}
+                        <p>{{track["name"]}} by {{track["artist"]}}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %} 
+    </div>
+    {% endfor %}
+    </br>
+    </br>
+    </br>
+    </br>
+    <div class="row">
+        <div class="col-6">
+            <h3>Top Artists</h3>
+            </br>
+            {% for artist in top_artists %}
+                <div class='list-item'>
+                    <div class="row">
+                        <div class="col-4">
+                            <img class="thumbnail" src='{{artist["image"]}}'/>
+                        </div>
+                        <div class="col-8">
+                            <h3>{{artist["name"]}}</h3>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+            {% endfor %}
+        </div>
+        <div class="col-6">
+            <h3 style="font-weight: bold;">Top Tracks</h3>
+            </br>
+            {% for track in top_tracks %}
+            <div class="list-item">
+                <div class="row">
+                    <div class="col-4">
+                        <img class="thumbnail" src='{{track["image"]}}'/>
+                    </div>
+                    <div class="col-8">
+                        <h3>{{track["name"]}}</h3>
+                        <p> by: 
+                            <span>
+                            {% for artist in track["artists"] %}
+                                {{artist["name"]}}
+                            {% endfor %}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}

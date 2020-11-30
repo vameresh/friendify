@@ -1,0 +1,24 @@
+#!/bin/bash
+# friendify-run
+
+# Stop on errors
+set -Eeuo pipefail
+
+# create database
+if [ ! -e var/friendify.sqlite3 ]
+then  # if the database doesn't exist, create it
+    ./bin/friendify-db create
+else
+    echo "Database already exists."
+fi
+
+# set environment variables
+export FLASK_ENV=development
+export FLASK_APP=friendify
+export SPOTIPY_CLIENT_ID='ddc1cd56dbaf437c8b9969c032fda8d9'
+export SPOTIPY_REDIRECT_URI='http://localhost:8000/accounts/login/'
+# CLIENT SECRET NOT INCLUDED
+export FRIENDIFY_SETTINGS=config.py
+
+# run flask
+flask run --host 0.0.0.0 --port 8000

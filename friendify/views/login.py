@@ -44,26 +44,27 @@ def show_login():
     # Connect to Spotify API
     spotify = spotipy.Spotify(auth_manager=auth_manager)
     username = spotify.me()["display_name"]
-    
-    # retrieve temporary database information for stored users
+
+    # Check if user exists
     cur = connection.execute(
-        "SELECT COUNT(username) "
-        "AS user_count FROM users WHERE username=?;",
+        "SELECT COUNT(*) AS count FROM users WHERE username=?",
         (username,)
     )
-    count_list = cur.fetchall()
-    count = 0
-    for user in count_list:
-        count = user["user_count"]
 
-    # if username doesn't exists, insert into table
-    if count == 0:
+    count = cur.fetchone()
+    if(count["count"] == 0):
+        # new user
         cur = connection.execute(
-        "INSERT INTO users (username)"
-        " VALUES (?);",
-        (username, )
+            "INSERT INTO users (username, active) VALUES(?,?)",
+            (username, True,)
+        )
+    else:
+        # update user
+        cur = connection.execute(
+            "UPDATE users SET active=? WHERE username=?;",
+            (True, username,)
         )
 
-    # log in
+    # Log in
     print("logged in, redirecting to index page")
     return flask.redirect(flask.url_for('show_index'))

@@ -7,7 +7,9 @@ URLs include:
 import flask, os, uuid, pprint
 import friendify
 import spotipy
-from friendify.views.helper import session_cache_path
+from friendify.views.helper import session_cache_path, is_following
+from friendify.views.helper import compare_score, compare_artists, compare_tracks
+from friendify.views.interact import add_friend, remove_friend
 
 
 @friendify.app.route('/', methods=['GET', 'POST'])
@@ -29,73 +31,69 @@ def show_index():
     # Connect to Spotify API
     spotify = spotipy.Spotify(auth_manager=auth_manager)
     username = spotify.me()["display_name"]
-    tracks = spotify.current_user_top_tracks(20, 0, 'medium_term')['items']
-    artists = spotify.current_user_top_artists(20, 0, 'medium_term')['items']
+
+    # assimilate user top data
+
+    tracks = spotify.current_user_top_tracks(50, 0, 'medium_term')['items']
+    artists = spotify.current_user_top_artists(50, 0, 'medium_term')['items']
 
     # Load temporary data
     rank = 1
     for track in tracks:
-        print(track["name"])
+        # print(track["name"])
         track["image"] = track["album"]["images"][0]["url"]
         cur = connection.execute(
-        "REPLACE INTO toptracks (username, track, rank)"
-        " VALUES (?, ?, ?);",
-        (username, track["name"], rank)
+            "REPLACE INTO toptracks (username, track, artist, rank)"
+            " VALUES (?, ?, ?, ?);",
+            (username, track["name"], track["artists"][0]["name"], rank,)
         )
         rank += 1
+        print(track["name"])
     rank = 1 
     for artist in artists:
-        print(artist["name"])
+        # print(artist["name"])
         artist["image"] = artist["images"][0]["url"]
         cur = connection.execute(
-        "REPLACE INTO topartists (username, artist, rank) "
-        "VALUES (?, ?, ?);",
-        (username, artist["name"], rank)
+            "REPLACE INTO topartists (username, artist, rank) "
+            "VALUES (?, ?, ?);",
+            (username, artist["name"], rank,)
         )
         rank += 1
 
     # Handle add friend
     if flask.request.method == 'POST':
-        if flask.request.form['username'] != "":
-            print(username, flask.request.form['username'])
-            cur = connection.execute(
-                "INSERT INTO following "
-                "VALUES (?, ?);",
-                (username, flask.request.form['username'],)
-            )
+        if 'follow' in flask.request.form:
+            add_friend(connection, username)
+        if 'unfollow' in flask.request.form:
+            remove_friend(connection, username)
         return flask.redirect(flask.url_for('show_index'))
 
     # query all following of user_url_slug
     cur = connection.execute(
-        "SELECT username2 as username "
+        "SELECT following.username2 AS username, users.active AS active "
         "FROM following "
-        "WHERE username1=?;",
+        "INNER JOIN users ON following.username2=users.username "
+        "WHERE following.username1=? "
+        "ORDER BY users.active DESC, users.username ASC",
         (username,)
     )
     following_list = cur.fetchall()
 
+    pp.pprint(following_list)
+
     for following in following_list:
         # query if user is following back
-        cur = connection.execute(
-            "SELECT COUNT(username2) "
-            "AS follow_back FROM following WHERE username1=?;",
-            (following["username"],)
-        )
-        count_list = cur.fetchall()
-        follow_back = 0
-        for user in count_list:
-            follow_back = user["follow_back"]
-        if follow_back == 0:
-            following["follow_back"] = 0
-            continue
-        else:
-            following["follow_back"] = 1
-
+        following["follows_back"] = is_following(connection, following["username"], username)
+        if following["follows_back"] and following["active"]:
+            following["score"] = compare_score(connection, following["username"], username)
+            following["similar_artists"] = compare_artists(connection, following["username"], username)
+            following["similar_tracks"] = compare_tracks(connection, following["username"], username)
+            
     context = {}
     context["following_list"] = following_list
     context["username"] = username
-    context["top_artists"] = artists
-    context["top_tracks"] = tracks
+    context["top_artists"] = artists[:20]
+    context["top_tracks"] = tracks[:20]
 
 
     

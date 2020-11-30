@@ -43,6 +43,12 @@ def show_logout():
         (username,)
     )
 
+    # Update user
+    cur = connection.execute(
+    "UPDATE users SET active=? WHERE username=?;",
+    (False, username)
+    )
+
     try:
         # Remove the CACHE file (.cache-test) so that a new user can authorize.
         os.remove(session_cache_path())
