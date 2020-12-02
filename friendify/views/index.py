@@ -37,6 +37,8 @@ def show_index():
     tracks = spotify.current_user_top_tracks(50, 0, 'medium_term')['items']
     artists = spotify.current_user_top_artists(50, 0, 'medium_term')['items']
 
+    hippocampus = spotify
+
     # Load temporary data
     rank = 1
     for track in tracks:

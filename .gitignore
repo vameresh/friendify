@@ -19,6 +19,7 @@ venv3/
 .ropeproject/
 .vscode/
 
+/bin/friendify-init
 
 *.pem
 *.db
