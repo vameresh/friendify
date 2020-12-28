@@ -37,8 +37,6 @@ def show_index():
     tracks = spotify.current_user_top_tracks(50, 0, 'medium_term')['items']
     artists = spotify.current_user_top_artists(50, 0, 'medium_term')['items']
 
-    hippocampus = spotify
-
     # Load temporary data
     rank = 1
     for track in tracks:
@@ -52,15 +50,18 @@ def show_index():
         rank += 1
         print(track["name"])
     rank = 1 
-    for artist in artists:
-        # print(artist["name"])
-        artist["image"] = artist["images"][0]["url"]
-        cur = connection.execute(
-            "REPLACE INTO topartists (username, artist, rank) "
-            "VALUES (?, ?, ?);",
-            (username, artist["name"], rank,)
-        )
-        rank += 1
+    if artists:
+        for artist in artists:
+            # print(artist["name"])
+            if artist["images"]:
+                artist["image"] = artist["images"][0]["url"]
+            cur = connection.execute(
+                "REPLACE INTO topartists (username, artist, rank) "
+                "VALUES (?, ?, ?);",
+                (username, artist["name"], rank,)
+            )
+            rank += 1
+            print(artist["name"])
 
     # Handle add friend
     if flask.request.method == 'POST':
